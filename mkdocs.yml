@@ -2,9 +2,14 @@ site_name: Rephi
 site_description: "Rephi — чистый функциональный язык на C с ленивыми вычислениями и graph-reduction"
 site_author: Artem
 repo_url: https://github.com/khnychenkoav/RephiDocs.git
+
+docs_dir: docs_src
+site_dir: docs
+
 theme:
   name: mkdocs
   language: ru
+
 nav:
   - Главная: index.md
   - Установка: installation.md
@@ -13,8 +18,10 @@ nav:
   - Архитектура: architecture.md
   - Стандартная библиотека: stdlib.md
   - Примеры: examples.md
+
 plugins:
   - search
+
 markdown_extensions:
   - toc:
       permalink: true
