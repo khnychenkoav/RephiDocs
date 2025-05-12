@@ -68,7 +68,7 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#1-pipeline">1. Факториал и вывод через pipeline</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#2-map-filter">2. Map и Filter над списком</a>
+    <li class="toctree-l2"><a class="reference internal" href="#2-map">2. Map над списком</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#3-func-end">3. Определение функции с помощью func … end</a>
     </li>
@@ -121,18 +121,18 @@ let rec fact = \n -&gt;
 120
 </code></pre>
 <hr />
-<h2 id="2-map-filter">2. Map и Filter над списком<a class="headerlink" href="#2-map-filter" title="Permanent link">&para;</a></h2>
+<h2 id="2-map">2. Map над списком<a class="headerlink" href="#2-map" title="Permanent link">&para;</a></h2>
 <pre><code class="language-re"># Создаём явный список чисел
-let numbers = [1,2,3,4,5,6,7,8,9,10]
+let numbers = [1,2,3,4]
 
-# Умножаем каждый элемент на 3 и фильтруем &gt; 15
+# Умножаем каждый элемент на 3 и достаем первый элемент
 numbers
   |&gt; map (\x -&gt; x * 3)
-  |&gt; filter (\x -&gt; x &gt; 15)
+  |&gt; head
   |&gt; println
 </code></pre>
 <p><strong>Ожидаемый вывод:</strong></p>
-<pre><code>[18,21,24,27,30]
+<pre><code>3
 </code></pre>
 <hr />
 <h2 id="3-func-end">3. Определение функции с помощью <code>func … end</code><a class="headerlink" href="#3-func-end" title="Permanent link">&para;</a></h2>

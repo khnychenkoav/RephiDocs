@@ -126,19 +126,8 @@ rephi&gt; [1,2,3,4] |&gt; map (\x -&gt; x * x) |&gt; tail |&gt; head
 <li>Чтобы выйти из REPL, нажмите <strong>Ctrl+D</strong> (EOF) или <strong>Ctrl+C</strong>.</li>
 </ul>
 <h2 id="2">2. Выполнение скриптов<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
-<p>Rephi поддерживает исполнение файлов с расширением <code>.re</code>. Создадим простой скрипт <code>fib.re</code>:</p>
-<pre><code class="language-re"># fib.re — вычисление чисел Фибоначчи и вывод списка
-
-let rec fib n =
-    if n == 0 then 0
-    else if n == 1 then 1
-    else fib (n - 1) + fib (n - 2)
-
-# Вычисляем fib для каждого элемента и печатаем
-[0, 1, 2, 3] |&gt; map fib |&gt; head |&gt; println
-</code></pre>
-<p>Запустите его так же, как REPL, указав файл:</p>
-<pre><code class="language-bash">./rephi fib.re
+<p>Rephi поддерживает исполнение файлов с расширением <code>.re</code>. Для этого достаточно создать файл с расширением <code>.re</code>, и запустить его так же, как REPL, указав файл:</p>
+<pre><code class="language-bash">./rephi script.re
 </code></pre>
 <h2 id="3">3. Передача аргументов и ввод/вывод<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
 <p>В текущей версии Rephi нет встроенного механизма чтения аргументов командной строки, но вы можете реализовать простое взаимодействие через файлы и стандартные функции println, readln, printfn, writefn</p>
