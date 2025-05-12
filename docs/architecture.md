@@ -1,17 +1,24 @@
-# Архитектура
+---
+title: Архитектура
+---
 
-1. **Лексер** (`src/lexer.c`) → токены  
-2. **Pratt-парсер** (`src/parser.c`) → AST  
-3. **Дешугаринг** (`src/desugar.c`): списки, placeholder, let  
-4. **Eval** (`src/eval.c`): Krivine-машина, thunks, memoization  
-5. **Runtime** (`src/runtime.c`): примитивы IO, file-IO  
-6. **REPL** (`src/repl.c`) & **batch** (`src/interpretator.c`)  
+# Архитектура реализации
 
-### Память
+1. **Лексер** (`src/lexer.c`): один проход, UTF‑8, ключевые слова и символы
+2. **Парсер** (`src/parser.c`): Pratt‑парсер с приоритетами
+3. **Десугаринг** (`src/desugar.c`): плейсхолдер `_`, списки и `let`
+4. **Eval** (`src/eval.c`): Krivine‑машина, thunks, call‑by‑need
+5. **Рантайм** (`src/runtime.c`): примитивы IO и file‑IO
+6. **REPL** (`src/repl.c`) & **batch** (`src/interpretator.c`)
 
-- **Bump-arena allocator**: единственный `malloc` и простой указатель.  
-- Без сложного GC.
+## Память и GC
 
-### Name table
+- Bump‑arena allocator: один гигабайтный буфер (malloc) и просто смещение
+- Без остановки мира и сложного сборщика
 
-- Блоки лексических контекстов, поддержка вложенных `let` и `let rec`.
+## Таблица имён
+
+- Лексические блоки и контексты
+- Поддержка вложенных `let`, `let rec` и функций (команды `func ... end`)
+
+[prev: Синтаксис](syntax.md) • [next: Стандартная библиотека](stdlib.md)

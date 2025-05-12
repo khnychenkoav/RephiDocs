@@ -1,15 +1,21 @@
 site_name: Rephi
-site_description: «Rephi» — чистый функциональный язык на C с ленивыми вычислениями и graph-reduction
+site_description: "Rephi — чистый функциональный язык на C с ленивыми вычислениями и graph-reduction"
 site_author: Ваше имя
-repo_url: https://github.com/MAILabs-Education-2025/fp-compiler-coursework-rephi
+repo_url: https://github.com/ваш-аккаунт/rephi
 theme:
   name: material
+  language: ru
 nav:
-  - Home: index.md
+  - Главная: index.md
   - Установка: installation.md
   - Быстрый старт: quickstart.md
   - Синтаксис: syntax.md
   - Архитектура: architecture.md
   - Стандартная библиотека: stdlib.md
   - Примеры: examples.md
- 
+  - Вклад: contributing.md
+plugins:
+  - search
+markdown_extensions:
+  - toc:
+      permalink: true
