@@ -1,7 +1,7 @@
 site_name: Rephi
 site_description: "Rephi — чистый функциональный язык на C с ленивыми вычислениями и graph-reduction"
 site_author: Ваше имя
-repo_url: https://github.com/ваш-аккаунт/rephi
+repo_url: https://github.com/khnychenkoav/RephiDocs
 theme:
   name: material
   language: ru
@@ -13,7 +13,6 @@ nav:
   - Архитектура: architecture.md
   - Стандартная библиотека: stdlib.md
   - Примеры: examples.md
-  - Вклад: contributing.md
 plugins:
   - search
 markdown_extensions:
