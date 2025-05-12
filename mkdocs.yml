@@ -3,7 +3,7 @@ site_description: "Rephi — чистый функциональный язык 
 site_author: Artem
 repo_url: https://github.com/khnychenkoav/RephiDocs.git
 theme:
-  name: material
+  name: mkdocs
   language: ru
 nav:
   - Главная: index.md
