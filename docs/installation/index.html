@@ -46,9 +46,15 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="./">Установка</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#_2">Зависимости</a>
+    <li class="toctree-l2"><a class="reference internal" href="#1">1. Системные требования</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#_3">Сборка и запуск</a>
+    <li class="toctree-l2"><a class="reference internal" href="#2">2. Клонирование репозитория</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3">3. Сборка интерпретатора</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4">4. Установка стандартной библиотеки</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5">5. Проверка установки</a>
     </li>
     </ul>
                 </li>
@@ -89,7 +95,6 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Установка</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/khnychenkoav/RephiDocs.git/edit/master/docs/installation.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -97,29 +102,66 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="_1">Установка<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<h2 id="_2">Зависимости<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+                <h1 id="rephi">Установка Rephi<a class="headerlink" href="#rephi" title="Permanent link">&para;</a></h1>
+<p>Этот раздел подробно описывает, как подготовить среду разработки, собрать интерпретатор и установить стандартную библиотеку <strong>Rephi</strong>.</p>
+<h2 id="1">1. Системные требования<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<p>Для сборки и работы Rephi потребуется:</p>
 <ul>
-<li>GCC (поддержка C17)</li>
-<li>make</li>
+<li><strong>Компилятор C</strong> с поддержкой стандарта <strong>C17</strong> (например, GCC версии ≥ 9 или Clang ≥ 10).</li>
+<li><strong>make</strong> (GNU Make) для управления процессом сборки.</li>
+<li><strong>UNIX-подобная ОС</strong> (Linux, macOS, BSD). На Windows рекомендуется использовать WSL или Cygwin.</li>
 </ul>
-<h2 id="_3">Сборка и запуск<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
-<pre><code class="language-bash">git clone https://github.com/ваш-аккаунт/rephi.git
-cd rephi
-make
-````
-
-В итоге в корне появится бинарник `rephi`.
-
-## Установка стандартной библиотеки
-
-```bash
-make install-stdlib DESTDIR=/usr/local
+<p>Дополнительно:</p>
+<ul>
+<li><strong>Git</strong> для клонирования репозитория.</li>
+<li>Права записи в каталог установки (<code>/usr/local</code> или другой, указанный через <code>DESTDIR</code>).</li>
+</ul>
+<h2 id="2">2. Клонирование репозитория<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<p>Сначала склонируйте проект с GitHub в локальный каталог:</p>
+<pre><code class="language-bash">git clone https://github.com/MAILabs-Education-2025/fp-compiler-coursework-rephi.git
+cd fp-compiler-coursework-rephi
 </code></pre>
-<p>По умолчанию копирует <code>.re</code> файлы в</p>
+<h2 id="3">3. Сборка интерпретатора<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<p>В корне репозитория вызовите команду:</p>
+<pre><code class="language-bash">make
+</code></pre>
+<p>По умолчанию Makefile использует следующие настройки:</p>
+<ul>
+<li><strong>CC</strong>: gcc (можно переопределить, например <code>make CC=clang</code>)</li>
+<li><strong>CFLAGS</strong>: <code>-std=c17 -Wall -Wextra -pedantic -O2 -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L</code></li>
+<li><strong>INC</strong>: <code>-Iinclude</code></li>
+</ul>
+<p>После успешной сборки в корне появится исполняемый файл:</p>
+<pre><code>./rephi
+</code></pre>
+<p>Вы можете сразу запустить REPL или передать имя скрипта:</p>
+<pre><code class="language-bash">./rephi           # вход в интерактивную оболочку
+./rephi program.re  # выполнение файла program.re
+</code></pre>
+<h2 id="4">4. Установка стандартной библиотеки<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<p>Rephi поставляется с набором модулей на языке <code>.re</code> (stdlib) для базовых функций:</p>
+<ul>
+<li><strong>prelude.re</strong> — основные функции над списками и парами</li>
+<li><strong>io.re</strong>     — объявления примитивов ввода-вывода</li>
+<li><strong>file_io.re</strong>— функции работы с файловой системой</li>
+</ul>
+<p>Чтобы сделать эти модули доступными глобально, возможно, необходимо будет выполнить:</p>
+<pre><code class="language-bash">make install-stdlib DESTDIR=/usr/local
+</code></pre>
+<p>По умолчанию модули будут скопированы в:</p>
 <pre><code>/usr/local/share/rephi/stdlib
 </code></pre>
-<p><a href="../quickstart/">next: Быстрый старт</a></p>
+<blockquote>
+<p><strong>Важно:</strong> при установке в нестандартный путь измените значение <code>DESTDIR</code> на нужный каталог.</p>
+</blockquote>
+<h2 id="5">5. Проверка установки<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<p>После сборки и установки stdlib убедитесь, что Rephi запускается без ошибок:</p>
+<pre><code class="language-bash">./rephi
+rephi&gt; 1 + 2 * 3
+7
+rephi&gt;
+</code></pre>
+<p>Если вы видите корректный ответ и приглашение <code>rephi&gt;</code>, установка прошла успешно.</p>
               
             </div>
           </div><footer>
@@ -146,10 +188,6 @@ make install-stdlib DESTDIR=/usr/local
 
   <div class="rst-versions" role="note" aria-label="Versions">
   <span class="rst-current-version" data-toggle="rst-current-version">
-    
-        <span>
-          <a href="https://github.com/khnychenkoav/RephiDocs.git" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
-        </span>
     
     
       <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>

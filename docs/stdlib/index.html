@@ -62,6 +62,24 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="./">Стандартная библиотека</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-preludere">1. prelude.re</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#preludere-repl">Пример использования prelude.re в REPL</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-iore">2. io.re</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#_1">Примеры</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-file_iore">3. file_io.re</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#_2">Пример чтения/записи</a>
+    </li>
+        </ul>
+    </li>
     </ul>
                 </li>
               </ul>
@@ -85,7 +103,6 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Стандартная библиотека</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/khnychenkoav/RephiDocs.git/edit/master/docs/stdlib.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -93,23 +110,118 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="_1">Стандартная библиотека<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<p>Страница загружается автоматически в REPL и batch-интерпретаторе.</p>
+                <h1 id="rephi">Стандартная библиотека Rephi<a class="headerlink" href="#rephi" title="Permanent link">&para;</a></h1>
+<p>При инициализации REPL или batch-интерпретатора автоматически вызывается функция <code>load_stdlib</code>, которая последовательно загружает модули из папки <code>rephi_stdlib/</code>:</p>
+<ol>
+<li><strong>prelude.re</strong> — основные функции над парами и списками</li>
+<li><strong>io.re</strong>     — обёртки для <code>print</code> и <code>readln</code></li>
+<li><strong>file_io.re</strong>— чтение и запись файлов</li>
+</ol>
+<p>Модули подключаются в следующем порядке:</p>
+<pre><code class="language-c">void load_stdlib(name_table *nt) {
+    static const char *modules[] = {
+        &quot;rephi_stdlib/prelude.re&quot;,
+        &quot;rephi_stdlib/io.re&quot;,
+        &quot;rephi_stdlib/file_io.re&quot;,
+        NULL
+    };
+    // для каждого модуля: читать файл, построчно парсить, eval, добавлять в name_table
+}
+</code></pre>
+<hr />
+<h2 id="1-preludere">1. prelude.re<a class="headerlink" href="#1-preludere" title="Permanent link">&para;</a></h2>
+<p>Модуль <code>prelude.re</code> определяет основные структуры данных: пары и списки, а также шаблонную реализацию функций высшего порядка.</p>
+<pre><code class="language-re"># prelude.re
+
+let pair = \a -&gt; \b -&gt; \f -&gt; f a b in pair
+let fst  = \p -&gt; p (\a b -&gt; a) in fst
+let snd  = \p -&gt; p (\a b -&gt; b) in snd
+
+let cons = \h -&gt; \t -&gt; \c -&gt; \n -&gt; c h (t c n) in cons
+let nil  = \c -&gt; \n -&gt; n in nil
+
+let head = \xs -&gt; xs (\h _ -&gt; h) nil in head
+let tail = \xs -&gt; fst (xs (\h p -&gt; pair (snd p) (cons h (snd p))) (pair nil nil)) in tail
+let pop  = \l -&gt; tail (tail l) in pop
+
+let isnil = \xs -&gt; xs (\h _ -&gt; 0) 1 in isnil
+
+let Y    = \f -&gt; (\x -&gt; f (\v -&gt; x x v)) (\x -&gt; f (\v -&gt; x x v)) in Y
+
+# Многопараметричные функции через Y-комбинатор
+let rec map = \f -&gt; \xs -&gt; if isnil xs then nil else cons (f (head xs)) (map f (tail xs)) in map
+</code></pre>
 <ul>
-<li><strong>prelude.re</strong>:</li>
-<li><code>pair</code>, <code>fst</code>, <code>snd</code>, <code>cons</code>, <code>nil</code></li>
-<li><code>map</code>, <code>filter</code>, <code>Y</code>‑комбинатор</li>
-<li><strong>io.re</strong>:</li>
-<li><code>println</code>, <code>readln</code></li>
-<li><strong>file_io.re</strong>:</li>
-<li><code>readFile</code>, <code>writeFile</code></li>
+<li><strong>pair</strong>: упаковка двух значений, принимает <code>a</code>, <code>b</code>, затем функцию <code>f</code>, применяет её к <code>a b</code>.</li>
+<li><strong>fst</strong>, <strong>snd</strong>: получение первого и второго элемента пары.</li>
+<li><strong>cons</strong>, <strong>nil</strong>: построение и пустой список (Church-encoded список).</li>
+<li><strong>head</strong>, <strong>tail</strong>, <strong>pop</strong>: получение первого элемента, разворот списка (через <code>|&gt;</code>) и извлечение первого элемента (возвращает список без первого элемента).</li>
+<li><strong>isnil</strong>: проверка на пустой список (возвращает <code>1</code> для пустого, <code>0</code> — иначе).</li>
+<li><strong>Y</strong>‑комбинатор: реализация рекурсии поверх чистых лямбд.</li>
+<li><strong>map</strong>: рекурсивная функция для применения <code>f</code> ко всем элементам списка.</li>
 </ul>
-<p>Примеры:
-```re
+<h3 id="preludere-repl">Пример использования prelude.re в REPL<a class="headerlink" href="#preludere-repl" title="Permanent link">&para;</a></h3>
+<pre><code class="language-repl">rephi&gt; [1,2,3,4] |&gt; map (\x -&gt; x * 2) |&gt; head
+2
+
+rephi&gt; head ([10,20,30])
+10
+
+rephi&gt; [1,2,3]|&gt;tail|&gt;head
+3
+
+rephi&gt; pop [1,2,3] |&gt; head
+2
+
+rephi&gt; isnil []
+1
+
+rephi&gt; isnil [0]
+0
+</code></pre>
+<hr />
+<h2 id="2-iore">2. io.re<a class="headerlink" href="#2-iore" title="Permanent link">&para;</a></h2>
+<p>Модуль <code>io.re</code> предоставляет удобный синтаксис для печати и чтения строк.</p>
+<pre><code class="language-re"># io.re
 let println = \x -&gt; print x in println
 let readln = readLine in readln
-````</p>
-<p><a href="../architecture/">prev: Архитектура</a> • <a href="../examples/">next: Примеры</a></p>
+</code></pre>
+<ul>
+<li><strong>println</strong>: принимает значение <code>Int</code> или результат любых функций, вызывает <code>print</code> (C-реализация из <code>runtime.c</code>) и возвращает аргумент.</li>
+<li><strong>readln</strong>: обёртка над <code>readLine</code> (C-реализация возвращает длину считанной строки).</li>
+</ul>
+<h3 id="_1">Примеры<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<pre><code class="language-repl">rephi&gt; println 42
+42
+
+rephi&gt; readln 0 #обязательно требует нуль-заглушку (в качестве заглушки может выступать любое число)
+#ввод пользователя
+1233
+4
+</code></pre>
+<hr />
+<h2 id="3-file_iore">3. file_io.re<a class="headerlink" href="#3-file_iore" title="Permanent link">&para;</a></h2>
+<p>Модуль <code>file_io.re</code> позволяет читать и записывать файлы по "именам" в виде числовых дескрипторов.</p>
+<pre><code class="language-re"># file_io.re
+let readfl = readFile in readfl
+let writefl = writeFile in writefl
+</code></pre>
+<ul>
+<li><strong>readfl</strong>: обёртка над <code>readFile</code> из <code>runtime.c</code>, принимает <code>Int</code> (имя файла), возвращает длину в байтах.</li>
+<li><strong>writefl</strong>: обёртка над <code>writeFile</code>, двухфазная функция: сначала принимает <code>Int</code> (имя файла), затем — <code>Int</code> (содержимое), возвращает статус (1 — успех).</li>
+</ul>
+<h3 id="_2">Пример чтения/записи<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash"># из REPL
+rephi&gt; writefl 100 12345
+1
+rephi&gt; readfl 100
+5
+
+# проверка контента
+$ cat 100
+12345
+</code></pre>
+<hr />
               
             </div>
           </div><footer>
@@ -136,10 +248,6 @@ let readln = readLine in readln
 
   <div class="rst-versions" role="note" aria-label="Versions">
   <span class="rst-current-version" data-toggle="rst-current-version">
-    
-        <span>
-          <a href="https://github.com/khnychenkoav/RephiDocs.git" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
-        </span>
     
     
       <span><a href="../architecture/" style="color: #fcfcfc">&laquo; Previous</a></span>

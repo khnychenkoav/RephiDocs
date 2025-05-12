@@ -50,7 +50,15 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="./">Быстрый старт</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#repl">Интерактивный REPL</a>
+    <li class="toctree-l2"><a class="reference internal" href="#1-repl">1. Запуск интерактивной оболочки (REPL)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2">2. Выполнение скриптов</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3">3. Передача аргументов и ввод/вывод</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4">4. Краткий обзор возможностей</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5">5. Что дальше?</a>
     </li>
     </ul>
                 </li>
@@ -87,7 +95,6 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Быстрый старт</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/khnychenkoav/RephiDocs.git/edit/master/docs/quickstart.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -95,32 +102,55 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="_1">Быстрый старт<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<h2 id="repl">Интерактивный REPL<a class="headerlink" href="#repl" title="Permanent link">&para;</a></h2>
+                <h1 id="rephi">Быстрый старт с Rephi<a class="headerlink" href="#rephi" title="Permanent link">&para;</a></h1>
+<p>В этом разделе вы узнаете, как быстро начать работу с Rephi: запустить интерактивную оболочку, выполнить скрипт и использовать основные возможности языка.</p>
+<h2 id="1-repl">1. Запуск интерактивной оболочки (REPL)<a class="headerlink" href="#1-repl" title="Permanent link">&para;</a></h2>
+<p>После успешной сборки в корне вашего репозитория появится исполняемый файл <code>rephi</code>. Запустите его без аргументов:</p>
 <pre><code class="language-bash">./rephi
-rephi&gt; 2 + 2
-4
-rephi&gt; let rec fact n = if n == 0 then 1 else n * fact (n - 1) in fact 6
-720
-````
-
-## Создание скрипта
-
-Создайте файл `fib.re`:
-
-```re
-let rec fib n =
-  if n == 0 then 0
-  else if n == 1 then 1
-  else fib (n-1) + fib (n-2)
-
-# Выводим первые 10 чисел Фибоначчи
-[0..10) |&gt; map fib |&gt; println
 </code></pre>
-<p>Запустите:</p>
+<p>Вы увидите приглашение:</p>
+<pre><code>rephi&gt;
+</code></pre>
+<p>Теперь можно вводить любые выражения на языке Rephi:</p>
+<pre><code class="language-repl">rephi&gt; 2 + 2
+4
+
+rephi&gt; let rec fact = \n -&gt; if n == 0 then 1 else n * fact (n - 1) in fact 6
+720
+
+rephi&gt; [1,2,3,4] |&gt; map (\x -&gt; x * x) |&gt; tail |&gt; head
+16
+
+</code></pre>
+<ul>
+<li>Чтобы выйти из REPL, нажмите <strong>Ctrl+D</strong> (EOF) или <strong>Ctrl+C</strong>.</li>
+</ul>
+<h2 id="2">2. Выполнение скриптов<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<p>Rephi поддерживает исполнение файлов с расширением <code>.re</code>. Создадим простой скрипт <code>fib.re</code>:</p>
+<pre><code class="language-re"># fib.re — вычисление чисел Фибоначчи и вывод списка
+
+let rec fib n =
+    if n == 0 then 0
+    else if n == 1 then 1
+    else fib (n - 1) + fib (n - 2)
+
+# Вычисляем fib для каждого элемента и печатаем
+[0, 1, 2, 3] |&gt; map fib |&gt; head |&gt; println
+</code></pre>
+<p>Запустите его так же, как REPL, указав файл:</p>
 <pre><code class="language-bash">./rephi fib.re
 </code></pre>
-<p><a href="../installation/">prev: Установка</a> • <a href="../syntax/">next: Синтаксис</a></p>
+<h2 id="3">3. Передача аргументов и ввод/вывод<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<p>В текущей версии Rephi нет встроенного механизма чтения аргументов командной строки, но вы можете реализовать простое взаимодействие через файлы и стандартные функции println, readln, printfn, writefn</p>
+<h2 id="4">4. Краткий обзор возможностей<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Лямбды</strong>: <code>\x -&gt; x + 1</code></li>
+<li><strong>Рекурсия</strong>: <code>let rec f = ... in f 10</code></li>
+<li><strong>Ленивость</strong>: <code>lazylet x = expensive in ...</code> и последующий <code>force x</code></li>
+<li><strong>Списки</strong>: <code>[1,2,3]</code></li>
+</ul>
+<h2 id="5">5. Что дальше?<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<p>После знакомства с REPL и запуском скриптов рекомендуем перейти к разделу <a href="../syntax/">Синтаксис</a>, где подробно описаны все конструкции языка.</p>
               
             </div>
           </div><footer>
@@ -147,10 +177,6 @@ let rec fib n =
 
   <div class="rst-versions" role="note" aria-label="Versions">
   <span class="rst-current-version" data-toggle="rst-current-version">
-    
-        <span>
-          <a href="https://github.com/khnychenkoav/RephiDocs.git" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
-        </span>
     
     
       <span><a href="../installation/" style="color: #fcfcfc">&laquo; Previous</a></span>

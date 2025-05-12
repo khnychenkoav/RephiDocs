@@ -66,9 +66,17 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="./">Примеры</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#_2">Факториал + вывод</a>
+    <li class="toctree-l2"><a class="reference internal" href="#1-pipeline">1. Факториал и вывод через pipeline</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#file-io">File I/O</a>
+    <li class="toctree-l2"><a class="reference internal" href="#2-map-filter">2. Map и Filter над списком</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-func-end">3. Определение функции с помощью func … end</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-lazylet-force">4. Ленивые вычисления: lazylet и force</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-file-io">5. Работа с файлами (File I/O)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-head-tail-pop">6. Операции над списками: head, tail, pop</a>
     </li>
     </ul>
                 </li>
@@ -89,7 +97,6 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Примеры</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/khnychenkoav/RephiDocs.git/edit/master/docs/examples.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -97,22 +104,92 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="_1">Примеры использования<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<h2 id="_2">Факториал + вывод<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<pre><code class="language-re">let rec fact n = if n == 0 then 1 else n * fact (n-1)
+                <h1 id="rephi">Примеры использования Rephi<a class="headerlink" href="#rephi" title="Permanent link">&para;</a></h1>
+<p>Ниже приведены примеры кода, которые вы можете запустить в REPL (важно учесть, что REPL требует однострочную запись команд) или сохранить в файл <code>.re</code> для пакетного выполнения.</p>
+<hr />
+<h2 id="1-pipeline">1. Факториал и вывод через pipeline<a class="headerlink" href="#1-pipeline" title="Permanent link">&para;</a></h2>
+<pre><code class="language-re"># Определение факториала
+let rec fact = \n -&gt;
+    if n == 0 then 1
+    else n * fact (n - 1)
+
+# Вычисление и вывод результата
 5 |&gt; fact |&gt; println
-````
-
-## Map и Filter
-
-```re
-[1..10) |&gt; map (_ * 3) |&gt; filter (&gt; 15) |&gt; println
 </code></pre>
-<h2 id="file-io">File I/O<a class="headerlink" href="#file-io" title="Permanent link">&para;</a></h2>
-<pre><code class="language-re">writeFile 1 456
-readFile 1 |&gt; println
+<p><strong>Результат в REPL:</strong></p>
+<pre><code>rephi&gt; 5 |&gt; fact |&gt; println
+120
 </code></pre>
-<p><a href="../stdlib/">prev: Стандартная библиотека</a> </p>
+<hr />
+<h2 id="2-map-filter">2. Map и Filter над списком<a class="headerlink" href="#2-map-filter" title="Permanent link">&para;</a></h2>
+<pre><code class="language-re"># Создаём явный список чисел
+let numbers = [1,2,3,4,5,6,7,8,9,10]
+
+# Умножаем каждый элемент на 3 и фильтруем &gt; 15
+numbers
+  |&gt; map (\x -&gt; x * 3)
+  |&gt; filter (\x -&gt; x &gt; 15)
+  |&gt; println
+</code></pre>
+<p><strong>Ожидаемый вывод:</strong></p>
+<pre><code>[18,21,24,27,30]
+</code></pre>
+<hr />
+<h2 id="3-func-end">3. Определение функции с помощью <code>func … end</code><a class="headerlink" href="#3-func-end" title="Permanent link">&para;</a></h2>
+<pre><code class="language-re"># Определяем функцию сложения двух чисел
+func add(a, b)
+    return a + b
+end
+
+# Вызываем и выводим
+println (add 10 20)
+</code></pre>
+<p><strong>Вывод в REPL:</strong></p>
+<pre><code>30
+</code></pre>
+<hr />
+<h2 id="4-lazylet-force">4. Ленивые вычисления: <code>lazylet</code> и <code>force</code><a class="headerlink" href="#4-lazylet-force" title="Permanent link">&para;</a></h2>
+<pre><code class="language-re"># Объявляем ленивую переменную x
+lazylet x = (
+    println 100   # распечатывает 100 и возвращает 100
+    |&gt; (\n -&gt; n * 2)
+)
+
+# Ещё нет вычисления — ничего не напечатано
+
+# Первый force: вычисление и печать
+force x |&gt; println
+# Второй force: возвращается кешированное значение без повторного println
+force x |&gt; println
+</code></pre>
+<p><strong>Пример вывода:</strong></p>
+<pre><code>100   # из println внутри ленивой инициализации при первом force
+200   # результат первого force
+200   # кешированное значение второго force
+</code></pre>
+<hr />
+<h2 id="5-file-io">5. Работа с файлами (File I/O)<a class="headerlink" href="#5-file-io" title="Permanent link">&para;</a></h2>
+<p>Важно: Rephi поддерживает работу с файлами и через readFile, writeFile, но мы настоятельно рекомендуем использовать readfl, writefl для лучшей совместимости с новыми версиями языка.</p>
+<pre><code class="language-re"># Записываем число 456 в файл с «именем» 1
+writefl 1 456
+
+# Читаем содержимое файла 1 и выводим длину
+readfl 1 |&gt; println
+</code></pre>
+<hr />
+<h2 id="6-head-tail-pop">6. Операции над списками: head, tail, pop<a class="headerlink" href="#6-head-tail-pop" title="Permanent link">&para;</a></h2>
+<pre><code class="language-re">let lst = [10,20,30,40]
+
+# Первый элемент
+head lst |&gt; println
+
+# Операция разворота списка (требует захвата конкретного элемента)
+lst |&gt; tail |&gt; |&gt; head |&gt;println
+
+# Список без первого
+lst |&gt; pop |&gt; println
+</code></pre>
+<hr />
               
             </div>
           </div><footer>
@@ -138,10 +215,6 @@ readFile 1 |&gt; println
 
   <div class="rst-versions" role="note" aria-label="Versions">
   <span class="rst-current-version" data-toggle="rst-current-version">
-    
-        <span>
-          <a href="https://github.com/khnychenkoav/RephiDocs.git" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
-        </span>
     
     
       <span><a href="../stdlib/" style="color: #fcfcfc">&laquo; Previous</a></span>

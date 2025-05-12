@@ -58,9 +58,25 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="./">Архитектура</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#gc">Память и GC</a>
+    <li class="toctree-l2"><a class="reference internal" href="#1-srclexerc">1. Лексер (src/lexer.c)</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#_2">Таблица имён</a>
+    <li class="toctree-l2"><a class="reference internal" href="#2-srcparserc">2. Парсер (src/parser.c)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-eval-krivine-srcevalc">3. Eval (Krivine‑машина) (src/eval.c)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-srcruntimec">4. Рантайм (src/runtime.c)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5">5. Интерфейс взаимодействия</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#51-repl-srcreplc">5.1 REPL (src/repl.c)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#52-batch-mode-srcinterpretatorc">5.2 Batch-mode (src/interpretator.c)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6">6. Управление памятью</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-srcname_tablec">7. Таблица имён (src/name_table.c)</a>
     </li>
     </ul>
                 </li>
@@ -89,7 +105,6 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Архитектура</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/khnychenkoav/RephiDocs.git/edit/master/docs/architecture.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -97,26 +112,145 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="_1">Архитектура реализации<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+                <h1 id="rephi">Архитектура реализации Rephi<a class="headerlink" href="#rephi" title="Permanent link">&para;</a></h1>
+<p>Rephi построен по классической многоступенчатой схеме: лексер → парсер → (дешугаринг) → eval → рантайм → интерфейс взаимодействия (REPL или batch). Ниже — подробное описание каждого компонента.</p>
+<hr />
+<h2 id="1-srclexerc">1. Лексер (<code>src/lexer.c</code>)<a class="headerlink" href="#1-srclexerc" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Однопроходный анализ UTF‑8-строки: функции <code>lexer_init</code> и <code>lexer_next</code></li>
+<li>Пропуск пробельных символов, поддержка комментариев <code>#…</code> и <code>--…</code></li>
+<li>
+<p>Опознаёт токены:</p>
+</li>
+<li>
+<p>Литеры целых чисел (<code>TOK_INT</code>)</p>
+</li>
+<li>Идентификаторы (<code>TOK_IDENT</code>) и символьные идентификаторы (<code>TOK_SYM_IDENT</code>)</li>
+<li>Ключевые слова (<code>if</code>, <code>then</code>, <code>else</code>, <code>let</code>, <code>rec</code>, <code>func</code>, <code>end</code>, <code>return</code>, <code>lazy</code>, <code>force</code>, <code>lazylet</code>)</li>
+<li>Операторы <code>+ - * / == = \ |&gt; ( ) [ ] ,</code></li>
+<li>
+<p>Ключевые таблицы:</p>
+</li>
+<li>
+<p><code>kw_table[]</code> для поиска ключевых слов (строгое сравнение по длине)</p>
+</li>
+<li>Символьные операторы: набор <code>!$%&amp;*+./:&lt;=&gt;?@^|-~</code></li>
+<li>При столкновении с неизвестным символом возвращает <code>TOK_UNKNOWN</code></li>
+</ul>
+<hr />
+<h2 id="2-srcparserc">2. Парсер (<code>src/parser.c</code>)<a class="headerlink" href="#2-srcparserc" title="Permanent link">&para;</a></h2>
+<p>Реализован Pratt-парсер с учётом приоритетов операторов:</p>
 <ol>
-<li><strong>Лексер</strong> (<code>src/lexer.c</code>): один проход, UTF‑8, ключевые слова и символы</li>
-<li><strong>Парсер</strong> (<code>src/parser.c</code>): Pratt‑парсер с приоритетами</li>
-<li><strong>Десугаринг</strong> (<code>src/desugar.c</code>): плейсхолдер <code>_</code>, списки и <code>let</code></li>
-<li><strong>Eval</strong> (<code>src/eval.c</code>): Krivine‑машина, thunks, call‑by‑need</li>
-<li><strong>Рантайм</strong> (<code>src/runtime.c</code>): примитивы IO и file‑IO</li>
-<li><strong>REPL</strong> (<code>src/repl.c</code>) &amp; <strong>batch</strong> (<code>src/interpretator.c</code>)</li>
+<li>
+<p><strong>parse_primary</strong> — первичные выражения:</p>
+</li>
+<li>
+<p>Литеры и идентификаторы</p>
+</li>
+<li>Лямбда-абстракции (<code>\params -&gt; body</code>)</li>
+<li><code>if</code>-выражения</li>
+<li><code>lazy</code>, <code>force</code>, <code>lazylet</code></li>
+<li><code>let</code> / <code>let rec</code></li>
+<li>Cписки <code>[1,2,3]</code> вёрсткой через <code>cons</code>/<code>nil</code></li>
+<li>Группировка в скобках</li>
+<li>
+<p><strong>parse_expr</strong> — петля обработки инфиксных операторов:</p>
+</li>
+<li>
+<p>Поиск следующего токена, определение его binding power (<code>precedence</code>)</p>
+</li>
+<li>Разбор <code>|&gt;</code> как специального пайплайн-оператора (меняет порядок применения)</li>
+<li>Встраивание пользовательских символьных операторов через <code>TOK_SYM_IDENT</code></li>
+<li>Создание узлов AST (<code>make_binary</code>, <code>make_apply</code>)</li>
 </ol>
-<h2 id="gc">Память и GC<a class="headerlink" href="#gc" title="Permanent link">&para;</a></h2>
+<p>Построенный AST описывается в <code>include/ast.h</code> (перечисление <code>NodeTag</code>, структура <code>Expr</code>).</p>
+<hr />
+<h2 id="3-eval-krivine-srcevalc">3. Eval (Krivine‑машина) (<code>src/eval.c</code>)<a class="headerlink" href="#3-eval-krivine-srcevalc" title="Permanent link">&para;</a></h2>
+<p>Главная функция — <code>eval_value(const Expr *e, name_table *nt)</code>, возвращающая <code>Value*</code>.</p>
 <ul>
-<li>Bump‑arena allocator: один гигабайтный буфер (malloc) и просто смещение</li>
-<li>Без остановки мира и сложного сборщика</li>
+<li><strong>AST_INT / AST_IDENT</strong> → создаются <code>VAL_INT</code> и поиск в <code>name_table</code></li>
+<li><strong>Арифметические узлы</strong> (<code>AST_ADD</code>, <code>AST_SUB</code>, <code>AST_MUL</code>, <code>AST_DIV</code>) → проверка целочисленных аргументов, вычисление</li>
+<li><strong>AST_EQ, AST_IF</strong> → сравнение и ветвление по <code>int</code> (0/1)</li>
+<li><strong>AST_LAMBDA</strong> → <code>val_closure</code> сохраняет параметр, тело и текущий контекст (<code>name_table_top_context</code>)</li>
+<li>
+<p><strong>AST_APPLY</strong>:</p>
+</li>
+<li>
+<p>Оптимизация цепочек вызовов: <code>flatten_apply</code> + поддержка <code>VAL_FUNC</code> (блоки <code>func ... end</code>)</p>
+</li>
+<li>Прямые C-примитивы (<code>VAL_PRIM</code>) вызываются немедленно</li>
+<li>Стандартное применение для <code>VAL_CLOSURE</code>: загрузка контекста, новый блок (<code>let</code>), подстановка аргумента</li>
+<li>
+<p><strong>Ленивость</strong>:</p>
+</li>
+<li>
+<p><code>AST_LAZY</code> → <code>val_thunk</code>, сохраняющий <code>Expr*</code>, контекст и необработанное значение для кеширования</p>
+</li>
+<li><code>AST_FORCE</code> → вычисление thunk при первом <code>force</code>, кеширование результата</li>
+<li><code>AST_LAZYLET</code> → объявление ленивой переменной в таблице имён без немедленного вычисления</li>
+<li><strong>AST_RETURN</strong> → поднимает специальный <code>VAL_RETURN</code> для реализации досрочного выхода из функции</li>
 </ul>
-<h2 id="_2">Таблица имён<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>Непосредственно многопараметрочные функции организованы через связный список <code>ValueNode*</code>.</p>
+<hr />
+<h2 id="4-srcruntimec">4. Рантайм (<code>src/runtime.c</code>)<a class="headerlink" href="#4-srcruntimec" title="Permanent link">&para;</a></h2>
+<p>Регистрация примитивов в <code>name_table</code>:</p>
 <ul>
-<li>Лексические блоки и контексты</li>
-<li>Поддержка вложенных <code>let</code>, <code>let rec</code> и функций (команды <code>func ... end</code>)</li>
+<li><strong>print</strong>  — вывод <code>Int</code> в stdout</li>
+<li><strong>readLine</strong> — чтение строки из stdin, возвращает длину</li>
+<li><strong>readFile</strong> — чтение файла по числовому имени, возвращает длину</li>
+<li><strong>writeFile</strong> — двухфазная функция: сначала <code>val_prim(writefile_second)</code>, затем запись числа как байтов</li>
 </ul>
-<p><a href="../syntax/">prev: Синтаксис</a> • <a href="../stdlib/">next: Стандартная библиотека</a></p>
+<p>Аргументы примитивов всегда упакованы в <code>Value*</code>.</p>
+<hr />
+<h2 id="5">5. Интерфейс взаимодействия<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<h3 id="51-repl-srcreplc">5.1 REPL (<code>src/repl.c</code>)<a class="headerlink" href="#51-repl-srcreplc" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Инициализация: <code>name_table_init</code>, <code>register_primitives</code>, <code>load_stdlib</code></li>
+<li>Чтение строк из stdin, парсинг и вызов <code>eval</code>, вывод <code>long</code></li>
+<li>Цикл до EOF (Ctrl+D)</li>
+</ul>
+<h3 id="52-batch-mode-srcinterpretatorc">5.2 Batch-mode (<code>src/interpretator.c</code>)<a class="headerlink" href="#52-batch-mode-srcinterpretatorc" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Построчный разбор с поддержкой специальных команд:</p>
+</li>
+<li>
+<p><code>func имя(args...) ... return ... end</code> — объявление функций</p>
+</li>
+<li>Все остальные строки — обычные Rephi-выражения (<code>parse</code> + <code>eval_value</code>)</li>
+<li>Хранение функций как <code>Value-&gt;func.firstLine</code> (список <code>FuncLine*</code>)</li>
+</ul>
+<hr />
+<h2 id="6">6. Управление памятью<a class="headerlink" href="#6" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Выделение</strong> через <code>malloc</code> для всех узлов AST, <code>Env</code>, <code>Value</code></li>
+<li>
+<p><strong>Освобождение</strong>:</p>
+</li>
+<li>
+<p><code>free_expr</code> рекурсивно удаляет AST</p>
+</li>
+<li><code>free_env</code> рекурсивно освобождает цепочку <code>Env</code></li>
+<li><code>free_name_table</code> чистит все блоки таблицы имён и окружения</li>
+</ul>
+<hr />
+<h2 id="7-srcname_tablec">7. Таблица имён (<code>src/name_table.c</code>)<a class="headerlink" href="#7-srcname_tablec" title="Permanent link">&para;</a></h2>
+<p>Реализована как стек <code>name_table_block</code>:</p>
+<ul>
+<li>Поле <code>block_head</code> — указатель на связанный список <code>Env</code> с именами и значениями</li>
+<li><code>next_block</code> — предыдущий блок в стеке лексических областей</li>
+<li><code>next_context</code> — ссылка на начало захваченного контекста (для замыканий и thunk)</li>
+</ul>
+<p>Основные операции:</p>
+<ul>
+<li><code>name_table_init</code> — создание глобального блока</li>
+<li><code>name_table_add</code> — добавление имени в текущий блок (ошибка при повторном объявлении)</li>
+<li><code>name_table_lookup</code> — поиск в цепочке контекстов</li>
+<li><code>name_table_push_block(nt, newContext)</code> / <code>name_table_pop_block(nt)</code> — открытие/закрытие областей видимости</li>
+<li><code>name_table_top_context</code> — сбор «среза» контекста для замыкания</li>
+<li><code>name_table_load_context</code> / <code>name_table_pop_context</code> — временное переключение на сохранённый контекст при вызове лямбд</li>
+</ul>
+<hr />
               
             </div>
           </div><footer>
@@ -143,10 +277,6 @@
 
   <div class="rst-versions" role="note" aria-label="Versions">
   <span class="rst-current-version" data-toggle="rst-current-version">
-    
-        <span>
-          <a href="https://github.com/khnychenkoav/RephiDocs.git" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
-        </span>
     
     
       <span><a href="../syntax/" style="color: #fcfcfc">&laquo; Previous</a></span>

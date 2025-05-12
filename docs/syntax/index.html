@@ -54,9 +54,33 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="./">Синтаксис</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#_2">Лексика</a>
+    <li class="toctree-l2"><a class="reference internal" href="#1">1. Лексика</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#_3">Основные конструкции</a>
+    <li class="toctree-l2"><a class="reference internal" href="#2">2. Приоритеты операторов</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3">3. Основные конструкции</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#31">3.1. Литералы и идентификаторы</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#32-function-application">3.2. Применение (Function application)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#33-">3.3. Лямбда-выражения</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#34-let-let-rec">3.4. Let и Let rec</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#35">3.5. Условное выражение</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#36">3.6. Списковые литералы</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#37-pipeline-">3.7. Pipeline-оператор</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#38-lazy-force-lazylet">3.8. Ленивость: lazy, force, lazylet</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#39">3.9. Определение функций в скриптах</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4">4. Пример полного выражения</a>
     </li>
     </ul>
                 </li>
@@ -89,7 +113,6 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Синтаксис</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/khnychenkoav/RephiDocs.git/edit/master/docs/syntax.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -97,54 +120,145 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="_1">Синтаксис языка<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<h2 id="_2">Лексика<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+                <h1 id="rephi">Синтаксис языка Rephi<a class="headerlink" href="#rephi" title="Permanent link">&para;</a></h1>
+<p>Ниже приведён полный обзор синтаксиса языка</p>
+<h2 id="1">1. Лексика<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Комментарии</strong>: <code># …</code> или <code>-- …</code></li>
-<li><strong>Числа</strong>: <code>123</code>, <code>0</code>, <code>42</code></li>
-<li><strong>Идентификаторы</strong>: буквы, цифры, <code>_</code>, начинаются с буквы или <code>_</code></li>
-<li><strong>Операторы</strong>: <code>+ - * / == = \ |&gt; [ ] ( ) ,</code></li>
+<li><strong>Пробелы и отступы</strong>: пропускаются (в том числе табуляции и перевод строки).</li>
+<li>
+<p><strong>Комментарии</strong>:</p>
+</li>
+<li>
+<p><code># ...</code> до конца строки</p>
+</li>
+<li><code>-- ...</code> до конца строки</li>
+<li>
+<p><strong>Литералы</strong>:</p>
+</li>
+<li>
+<p>Целые числа: последовательность цифр, например <code>0</code>, <code>123</code>, <code>42</code>.</p>
+</li>
+<li>
+<p><strong>Идентификаторы</strong>:</p>
+</li>
+<li>
+<p>Начинаются с буквы <code>[A-Za-z]</code> или <code>_</code>, могут содержать буквы, цифры и <code>_</code>.</p>
+</li>
+<li>Примеры: <code>x</code>, <code>foo</code>, <code>_tmp1</code>, <code>map2</code>.</li>
+<li>
+<p><strong>Символьные идентификаторы</strong> (infix-операторы):</p>
+</li>
+<li>
+<p>Любая непустая последовательность символов из набора <code>!$%&amp;*+./:&lt;=&gt;?@^|-~</code>.</p>
+</li>
+<li>Пример: <code>**</code>, <code>&gt;&gt;=</code>, <code>++</code>, <code>$</code>.</li>
+<li>
+<p><strong>Ключевые слова</strong>:</p>
+</li>
+<li>
+<p><code>if</code>, <code>then</code>, <code>else</code>, <code>let</code>, <code>in</code>, <code>rec</code>, <code>func</code>, <code>end</code>, <code>return</code>, <code>lazy</code>, <code>force</code>, <code>lazylet</code>.</p>
+</li>
+<li>
+<p><strong>Операторы и разделители</strong>:</p>
+</li>
+<li>
+<p><code>+  -  *  /  ==  =  \  |&gt;  (  )  [  ]  ,</code> и другие символы для infix-операторов.</p>
+</li>
 </ul>
-<h2 id="_3">Основные конструкции<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h2 id="2">2. Приоритеты операторов<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<p>Перед использованием операторов важно понять, что Rephi пердназначен в первую очередь для обучения и по этой причине на текущей версии поддерживает только работу (в особенности ввод и вывод) с целыми числами</p>
+<p>Все операторы лево‑ассоциативны. Приоритет (от 0 до 60):</p>
 <table>
 <thead>
 <tr>
-<th>Конструкция</th>
-<th>Пример</th>
+<th>Оператор</th>
+<th>Приоритет</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Lambda</td>
-<td><code>\\x -&gt; x + 1</code></td>
+<td><code>*</code>, <code>/</code></td>
+<td>60</td>
 </tr>
 <tr>
-<td>Применение</td>
-<td><code>f x y</code></td>
+<td><code>+</code>, <code>-</code></td>
+<td>50</td>
 </tr>
 <tr>
-<td>Let</td>
-<td><code>let x = 10 in x * 2</code></td>
+<td><code>==</code></td>
+<td>40</td>
 </tr>
 <tr>
-<td>Let rec</td>
-<td><code>let rec fact n = … in fact 5</code></td>
+<td><code>|&gt;</code></td>
+<td>20</td>
 </tr>
 <tr>
-<td>If-выражение</td>
-<td><code>if cond then a else b</code></td>
+<td><strong>Пользовательские символьные</strong> (<code>SYM_IDENT</code>)</td>
+<td>55</td>
 </tr>
 <tr>
-<td>Списки</td>
-<td><code>[1,2,3]</code>, диапазон <code>[0..10)</code></td>
-</tr>
-<tr>
-<td>Pipeline</td>
-<td><code>xs |&gt; map (_*2) |&gt; filter (&gt;5)</code></td>
+<td><strong>Применение (function call)</strong></td>
+<td>70</td>
 </tr>
 </tbody>
 </table>
-<p><a href="../quickstart/">prev: Быстрый старт</a> • <a href="../architecture/">next: Архитектура</a></p>
+<p>Применение функций (например <code>f x y</code>) имеет самый высокий приоритет.</p>
+<h2 id="3">3. Основные конструкции<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<h3 id="31">3.1. Литералы и идентификаторы<a class="headerlink" href="#31" title="Permanent link">&para;</a></h3>
+<pre><code class="language-re">42
+foo_bar
+</code></pre>
+<h3 id="32-function-application">3.2. Применение (Function application)<a class="headerlink" href="#32-function-application" title="Permanent link">&para;</a></h3>
+<p>Вызов функции — простая последовательность выражений.</p>
+<pre><code class="language-re">f x y  # эквивалентно (f x) y
+</code></pre>
+<h3 id="33-">3.3. Лямбда-выражения<a class="headerlink" href="#33-" title="Permanent link">&para;</a></h3>
+<p>Синтаксис: <code>\param -&gt; тело</code>.</p>
+<pre><code class="language-re">\x -&gt; x + 1
+\x y -&gt; x * y   # эквивалентно \x -&gt; (\y -&gt; x*y)
+</code></pre>
+<h3 id="34-let-let-rec">3.4. Let и Let rec<a class="headerlink" href="#34-let-let-rec" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Let</strong>: <code>let имя = выражение in тело</code>.</li>
+<li><strong>Let rec</strong>: <code>let rec имя = выражение in тело</code> (внутри <code>expression</code> должно быть лямбда).</li>
+</ul>
+<pre><code class="language-re">let x = 10 in x * 2
+let rec fact = \n -&gt; if n == 0 then 1 else n * fact (n - 1) in fact 5
+</code></pre>
+<h3 id="35">3.5. Условное выражение<a class="headerlink" href="#35" title="Permanent link">&para;</a></h3>
+<pre><code class="language-re">if cond then expr1 else expr2
+</code></pre>
+<h3 id="36">3.6. Списковые литералы<a class="headerlink" href="#36" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Явный список</strong>:</li>
+</ul>
+<p><code>[1, 2, 3]</code></p>
+<p>Порождается через вложенные вызовы <code>cons</code>/<code>nil</code>с применением кодирования Черча.</p>
+<h3 id="37-pipeline-">3.7. Pipeline-оператор<a class="headerlink" href="#37-pipeline-" title="Permanent link">&para;</a></h3>
+<p>Синтаксис: <code>expr1 |&gt; expr2</code> эквивалентен <code>expr2 expr1</code> (приоритет 20).</p>
+<pre><code class="language-re">[1,2,3] |&gt; map (\x -&gt; x*2) |&gt; filter (&gt; 3)
+</code></pre>
+<h3 id="38-lazy-force-lazylet">3.8. Ленивость: <code>lazy</code>, <code>force</code>, <code>lazylet</code><a class="headerlink" href="#38-lazy-force-lazylet" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>lazy expr</code></strong> — создаёт thunk, вычисление отложено.</li>
+<li><strong><code>force expr</code></strong> — запускает thunk и возвращает значение (с кешированием).</li>
+<li><strong><code>lazylet x = expr</code></strong> — объявляет ленивую переменную <code>x</code>, аналогично <code>let</code>, но вычисление отложено до <code>force</code> или явного использования.</li>
+</ul>
+<pre><code class="language-re">lazylet z = expensive_calculation
+... use z ...
+force z
+</code></pre>
+<h3 id="39">3.9. Определение функций в скриптах<a class="headerlink" href="#39" title="Permanent link">&para;</a></h3>
+<pre><code class="language-re">func имя(arg1, arg2, ...)     # начало определения
+   ... тело: произвольные Rephi-выражения
+return expr                    # необязательно, для досрочного выхода
+end                            # конец определения
+</code></pre>
+<p>После чего функция доступна как обычный идентификатор.</p>
+<h2 id="4">4. Пример полного выражения<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<pre><code class="language-re"># Вычисляем факториал 5 и выводим через пайплайн
+let rec fact = \n -&gt; if n == 0 then 1 else n * fact (n-1) in 5 |&gt; fact |&gt; print
+</code></pre>
               
             </div>
           </div><footer>
@@ -171,10 +285,6 @@
 
   <div class="rst-versions" role="note" aria-label="Versions">
   <span class="rst-current-version" data-toggle="rst-current-version">
-    
-        <span>
-          <a href="https://github.com/khnychenkoav/RephiDocs.git" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
-        </span>
     
     
       <span><a href="../quickstart/" style="color: #fcfcfc">&laquo; Previous</a></span>

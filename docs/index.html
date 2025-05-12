@@ -42,7 +42,13 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href=".">Главная</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#_1">Основные фичи</a>
+    <li class="toctree-l2"><a class="reference internal" href="#_1">Основные цели и задачи</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_2">Структура документации</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_3">Основные фичи</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#rephi_1">Почему Rephi?</a>
     </li>
     </ul>
                 </li>
@@ -87,7 +93,6 @@
     <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Главная</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/khnychenkoav/RephiDocs.git/edit/master/docs/index.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -96,25 +101,43 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="rephi">Rephi<a class="headerlink" href="#rephi" title="Permanent link">&para;</a></h1>
-<p>«Rephi» — минималистичный функциональный язык на чистом C:</p>
+<p>Rephi — минималистичный функциональный язык программирования, реализованный в чистом ISO C17. Его цель — обеспечить простую и прозрачную среду для изучения чистого функционального ядра на базе λ‑исчисления, сохраняя при этом высокую производительность старта и минимальные системные требования.</p>
+<h2 id="_1">Основные цели и задачи<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Ленивые вычисления</strong> (call‑by‑need) и graph‑reduction через thunks</li>
-<li><strong>Ядро = чистое λ‑исчисление</strong>, всё остальное — сахар</li>
-<li><strong>ISO C17</strong> и один Makefile, без внешних зависимостей и GC</li>
-<li>Любой <code>.re</code>‑файл можно <strong>запустить</strong> или <strong>превратить</strong> в <strong>Markdown</strong></li>
+<li><strong>Чистота ядра</strong>: язык основан на чистом λ‑исчислении, а все дополнительные конструкции (сахар) сводятся к основным λ‑узлам.</li>
+<li><strong>Ленивая семантика</strong>: вычисления выполняются по модели call‑by‑need с использованием thunks ("обещаний"). Результат вычисления сохраняется и повторно используется без повторных вычислений.</li>
+<li><strong>Минимум зависимостей</strong>: весь код написан на C17 и собирается одним Makefile без внешних библиотек и сборщиков мусора.</li>
 </ul>
+<h2 id="_2">Структура документации<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="installation/">Installation</a> — установка и сборка Rephi</li>
+<li><a href="quickstart/">Quickstart</a> — первые шаги: компиляция, запуск, REPL</li>
+<li><a href="syntax/">Syntax</a> — подробный обзор синтаксиса языка и примеры использования</li>
+<li><a href="architecture/">Architecture</a> — внутренняя архитектура: лексинг, парсинг, AST, eval, рантайм</li>
+<li><a href="stdlib/">Standard Library</a> — описания модулей и встроенных функций</li>
+<li><a href="examples/">Examples</a> — готовые примеры программ на Rephi</li>
+</ul>
+<h2 id="_3">Основные фичи<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Haskell‑подобный синтаксис</strong>: лямбды (<code>\x -&gt; x + 1</code>), инфиксные операции, конвейеры (<code>|&gt;</code>).</li>
+<li><strong>Удобные конструкции</strong>: <code>let</code>/<code>let rec</code>, условные выражения <code>if ... then ... else ...</code>, списки <code>[1,2,3]</code>.</li>
+<li><strong>Стандартная библиотека</strong>: готовые функции наподобие <code>map</code>, операции ввода‑вывода и файлового IO.</li>
+<li><strong>Интерактивная оболочка (REPL)</strong>: быстрый цикл разработки и тестирования небольших фрагментов.</li>
+<li><strong>Запуск скриптов</strong>: сценарное использование в shell:</li>
+</ul>
+<p><code>make</code> - сборка интерпретатора</p>
+<p><code>./rephi</code> - запуск REPL</p>
+<p><code>./rephi script.re</code> - выполнение скрипта</p>
+<h2 id="rephi_1">Почему Rephi?<a class="headerlink" href="#rephi_1" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Быстрый старт</strong> — одна команда <code>make</code>, и вы уже в REPL без сложных настроек.</li>
+<li><strong>Учебная ценность</strong> — понятная структура кода позволяет легко погрузиться в реализацию лексера, парсера и Krivine‑машины.</li>
+<li><strong>Гибкость</strong> — минимальное ядро легко расширять: добавлять новые операторы, Hindley‑Milner типизацию, effect handlers или JIT.</li>
+</ol>
 <hr />
-<h2 id="_1">Основные фичи<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Haskell‑подобный синтаксис: <code>\x -&gt; x + 1</code>, <code>[1,2,3] |&gt; map (_ * 2)</code></li>
-<li><code>let rec</code>, диапазоны <code>[0..10)</code>, placeholder <code>_</code></li>
-<li>Стандартная библиотека: <code>map</code>, <code>filter</code>, IO, file‑IO</li>
-<li>REPL и запуск скриптов:</li>
-</ul>
-<p><code>bash
-  make           # сборка интерпретатора
-  ./rephi        # запуск REPL
-  ./rephi file.re  # выполнение скрипта</code></p>
+<blockquote>
+<p>Далее рекомендуем начать с раздела <a href="installation/">Installation</a>, чтобы настроить среду и собрать Rephi.</p>
+</blockquote>
               
             </div>
           </div><footer>
@@ -141,10 +164,6 @@
   <div class="rst-versions" role="note" aria-label="Versions">
   <span class="rst-current-version" data-toggle="rst-current-version">
     
-        <span>
-          <a href="https://github.com/khnychenkoav/RephiDocs.git" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
-        </span>
-    
     
     
       <span><a href="installation/" style="color: #fcfcfc">Next &raquo;</a></span>
@@ -167,5 +186,5 @@
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2025-05-12 13:42:46.059041+00:00
+Build Date UTC : 2025-05-12 14:49:47.359829+00:00
 -->
