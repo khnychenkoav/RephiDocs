@@ -1,14 +1,22 @@
 site_name: Rephi
 site_description: "Rephi — чистый функциональный язык на C с ленивыми вычислениями и graph-reduction"
 site_author: Artem
-repo_url: https://github.com/khnychenkoav/RephiDocs.git
 
 docs_dir: docs_src
 site_dir: docs
 
 theme:
-  name: mkdocs
+  name: readthedocs
   language: ru
+  palette:
+    scheme: default
+    primary: 'indigo'
+    accent: 'indigo'
+  font:
+    text: 'Roboto'
+    code: 'Roboto Mono'
+  icon:
+    repo: fontawesome/brands/github
 
 nav:
   - Главная: index.md
